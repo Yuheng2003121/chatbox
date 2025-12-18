@@ -2,13 +2,15 @@ import { inngest } from "@/inngest/client";
 import { prisma } from "@/lib/prisma";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import z from "zod";
-export const messagesRouter = createTRPCRouter({
+import { generateSlug } from "random-word-slugs";
+
+export const projectsRouter = createTRPCRouter({
   getMany: baseProcedure.query(async () => {
-    const messages = await prisma.message.findMany({
+    const projects = await prisma.project.findMany({
       orderBy: { createdAt: "desc" },
     });
 
-    return messages;
+    return projects;
   }),
   create: baseProcedure
     .input(
@@ -19,16 +21,21 @@ export const messagesRouter = createTRPCRouter({
           .max(10000, {
             message: "Value is too long ",
           }),
-        projectId: z.string().min(1, { message: "Project Id cannot be empty" }),
       })
     )
     .mutation(async ({ input }) => {
-      const createdMessage = await prisma.message.create({
+      const createdProject = await prisma.project.create({
         data: {
-          content: input.value,
-          role: "USER",
-          type: "RESULT",
-          projectId: input.projectId,
+          name: generateSlug(2, {
+            format: "kebab",
+          }),
+          messages: {
+            create: {
+              content: input.value,
+              role: "USER",
+              type: "RESULT",
+            },
+          },
         },
       });
 
@@ -36,10 +43,10 @@ export const messagesRouter = createTRPCRouter({
         name: "code-agent/run",
         data: {
           value: input.value,
-          projectId: input.projectId,
+          projectedId: createdProject.id,
         },
       });
 
-      return createdMessage;
+      return createdProject;
     }),
 });

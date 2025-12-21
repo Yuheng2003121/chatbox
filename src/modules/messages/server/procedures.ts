@@ -3,13 +3,24 @@ import { prisma } from "@/lib/prisma";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import z from "zod";
 export const messagesRouter = createTRPCRouter({
-  getMany: baseProcedure.query(async () => {
-    const messages = await prisma.message.findMany({
-      orderBy: { createdAt: "desc" },
-    });
+  getMany: baseProcedure
+    .input(
+      z.object({
+        projectId: z.string().min(1, { message: "Project Id cannot be empty" }),
+      })
+    )
+    .query(async ({ input }) => {
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+      const messages = await prisma.message.findMany({
+        where: { projectId: input.projectId },
+        orderBy: { createdAt: "asc" },
+        include: {
+          fragment: true,
+        },
+      });
 
-    return messages;
-  }),
+      return messages;
+    }),
   create: baseProcedure
     .input(
       z.object({

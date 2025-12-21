@@ -11,7 +11,7 @@ export default function ProjectList() {
   const trpc = useTRPC();
   const { data: projects } = useQuery(trpc.projects.getMany.queryOptions());
   return (
-    <div className="border rounded-lg w-full bg-white dark:bg-sidebar rouned-xl flex flex-col gap-6 sm:gap-4 p-8">
+    <div className="border rounded-lg w-full bg-secondary dark:bg-sidebar rouned-xl flex flex-col gap-6 sm:gap-4 p-8">
       <h2 className="text-xl md:text-2xl font-bold">Saved Vibes</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -22,7 +22,7 @@ export default function ProjectList() {
           <Button
             key={project.id}
             variant={"outline"}
-            className="w-full h-auto p-4! justify-start"
+            className="w-full h-auto p-4! justify-start "
             asChild
           >
             <Link

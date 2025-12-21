@@ -1,18 +1,24 @@
 import { inngest } from "@/inngest/client";
 import { prisma } from "@/lib/prisma";
-import { baseProcedure, createTRPCRouter } from "@/trpc/init";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { TRPCError } from "@trpc/server";
 import z from "zod";
 export const messagesRouter = createTRPCRouter({
-  getMany: baseProcedure
+  getMany: protectedProcedure
     .input(
       z.object({
         projectId: z.string().min(1, { message: "Project Id cannot be empty" }),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       // await new Promise((resolve) => setTimeout(resolve, 1000));
       const messages = await prisma.message.findMany({
-        where: { projectId: input.projectId },
+        where: { 
+          projectId: input.projectId,
+          project: {
+            userId: ctx.auth.userId
+          }
+         },
         orderBy: { createdAt: "asc" },
         include: {
           fragment: true,
@@ -21,7 +27,7 @@ export const messagesRouter = createTRPCRouter({
 
       return messages;
     }),
-  create: baseProcedure
+  create: protectedProcedure
     .input(
       z.object({
         value: z
@@ -33,7 +39,18 @@ export const messagesRouter = createTRPCRouter({
         projectId: z.string().min(1, { message: "Project Id cannot be empty" }),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      const existedProject = await prisma.project.findUnique({
+        where: {
+          id: input.projectId,
+          userId: ctx.auth.userId
+        }
+      })
+
+      if(!existedProject){
+        throw new TRPCError({code:"NOT_FOUND", message: "Project not found" })
+      }
+
       const createdMessage = await prisma.message.create({
         data: {
           content: input.value,
@@ -47,7 +64,7 @@ export const messagesRouter = createTRPCRouter({
         name: "code-agent/run",
         data: {
           value: input.value,
-          projectId: input.projectId,
+          projectId: existedProject.id,
         },
       });
 

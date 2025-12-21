@@ -90,7 +90,7 @@ export default function MessageForm({ projectId }: MessageFormProps) {
                     e.preventDefault(); // 阻止换行
                     form.handleSubmit(onSubmit)(e);
                   }
-                  // ⚠️ 如果按了 Shift+Enter → 不 preventDefault，保留换行默认行为
+                  // 如果按了 Shift+Enter → 不 preventDefault，保留换行默认行为
                 }
               }}
             />

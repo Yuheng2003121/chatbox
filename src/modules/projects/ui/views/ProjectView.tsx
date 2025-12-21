@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { TabsContent } from "@radix-ui/react-tabs";
 import FileExplorer, { FileCollection } from "@/components/codeView/FileExplorer";
+import UserControl from "@/components/UserControl";
 export default function ProjectView({ projectId }: { projectId: string }) {
   const [activeFragment, setActiveFragment] = useState<Fragment | null>(null);
   const [tabState, setTabState] = useState<"preview" | "code">("preview");
@@ -58,12 +59,13 @@ export default function ProjectView({ projectId }: { projectId: string }) {
                   <span>Code</span>
                 </TabsTrigger>
               </TabsList>
-              <div className="items-center">
-                <Button asChild size="sm" variant={"default"}>
+              <div className="flex items-center gap-4">
+                <Button asChild size="sm" variant={"teritary"} >
                   <Link href={"/pricing"}>
                     <CrownIcon /> Upgrade
                   </Link>
                 </Button>
+                <UserControl showName={false} />
               </div>
             </div>
             <TabsContent value="preview" className="h-full min-h-0">

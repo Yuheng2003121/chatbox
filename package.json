@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "e2b:build:dev": "cd vibe && npx tsx build.dev.ts",
-    "e2b:build:prod": "cd vibe && npx tsx build.prod.ts"
+    "e2b:build:prod": "cd vibe && npx tsx build.prod.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.36.5",

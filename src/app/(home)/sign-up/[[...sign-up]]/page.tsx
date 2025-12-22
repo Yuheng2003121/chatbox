@@ -6,8 +6,10 @@ import { dark } from "@clerk/themes";
 export default function Page() {
   const currentTheme = useCurrentTheme();
   return (
-    <SignUp
-      appearance={{ theme: currentTheme === "dark" ? dark : undefined }}
-    />
+    <div className="pt-18 flex justify-center items-center">
+      <SignUp
+        appearance={{ theme: currentTheme === "dark" ? dark : undefined }}
+      />
+    </div>
   );
 }

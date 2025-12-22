@@ -12,7 +12,6 @@ export default function Navbar() {
   const isScrolled = useScroll();
 
 
-
   return (
     <nav
       className={cn(

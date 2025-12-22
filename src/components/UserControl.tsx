@@ -16,13 +16,13 @@ export default function UserControl({ showName }: UserControlProps) {
    }, []);
 
    if (!mounted) {
-     // 可选：SSR 时渲染骨架/占位符，避免 layout shift
      return <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />;
    }
   return (
     <UserButton
       showName={showName}
       appearance={{ theme: currentTheme === "dark" ? dark : undefined }}
+      
     ></UserButton>
   );
 }

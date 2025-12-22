@@ -16,7 +16,11 @@ import Link from "next/link";
 import { TabsContent } from "@radix-ui/react-tabs";
 import FileExplorer, { FileCollection } from "@/components/codeView/FileExplorer";
 import UserControl from "@/components/UserControl";
+import { useAuth } from "@clerk/nextjs";
 export default function ProjectView({ projectId }: { projectId: string }) {
+  const {has} = useAuth();
+  const isProAccess = has?.({plan: 'pro'})
+
   const [activeFragment, setActiveFragment] = useState<Fragment | null>(null);
   const [tabState, setTabState] = useState<"preview" | "code">("preview");
 
@@ -60,11 +64,13 @@ export default function ProjectView({ projectId }: { projectId: string }) {
                 </TabsTrigger>
               </TabsList>
               <div className="flex items-center gap-4">
-                <Button asChild size="sm" variant={"teritary"} >
-                  <Link href={"/pricing"}>
-                    <CrownIcon /> Upgrade
-                  </Link>
-                </Button>
+                {!isProAccess && (
+                  <Button asChild size="sm" variant={"teritary"}>
+                    <Link href={"/pricing"}>
+                      <CrownIcon /> Upgrade
+                    </Link>
+                  </Button>
+                )}
                 <UserControl showName={false} />
               </div>
             </div>

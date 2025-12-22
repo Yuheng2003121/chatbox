@@ -6,8 +6,8 @@ export default function Home() {
 
 
   return (
-    <div className="max-w-lg md:max-w-5xl">
-      <section className="flex flex-col gap-7 justify-center items-center relative">
+    <div className="pt-[16vh] 2xl:pt-38 flex justify-center items-center">
+      <section className="max-w-lg md:max-w-5xl flex flex-col gap-7 justify-center items-center">
         <Image src={"/aiLogo.svg"} alt="Vibe" width={50} height={50} />
 
         <h1 className="text-xl md:text-5xl font-bold">

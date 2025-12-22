@@ -1,5 +1,6 @@
 import { inngest } from "@/inngest/client";
 import { prisma } from "@/lib/prisma";
+import { consumeCredits } from "@/modules/usage/usage";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
@@ -51,6 +52,17 @@ export const messagesRouter = createTRPCRouter({
         throw new TRPCError({code:"NOT_FOUND", message: "Project not found" })
       }
 
+      try {
+        await consumeCredits();
+      } catch (error) {
+        if(error instanceof Error) {
+          throw new TRPCError({code:"BAD_REQUEST", message: error.message })
+        } else {
+          throw new TRPCError({code: "TOO_MANY_REQUESTS", message: "You have reached your daily limit"})
+        }
+        
+      }
+
       const createdMessage = await prisma.message.create({
         data: {
           content: input.value,
@@ -59,6 +71,8 @@ export const messagesRouter = createTRPCRouter({
           projectId: input.projectId,
         },
       });
+
+      
 
       await inngest.send({
         name: "code-agent/run",

@@ -42,25 +42,21 @@ export default function MessagesContainer({
   };
 
   const lastAssistantMessageIdRef = useRef<string>(null);
-  const lastUserMessageIdRef = useRef<string>(null);
+  const lastMessageIdRef = useRef<string>(null);
 
   useEffect(() => {
     const lastAssistantMessage = messages.findLast(message => message.role === "ASSISTANT")
-    const lastUserMessage = messages.findLast(message => message.role === "USER")
+    const lastMessage = messages[messages.length - 1]
     if(lastAssistantMessage?.fragment && lastAssistantMessage.id !== lastAssistantMessageIdRef.current) {
       setActiveFragment(lastAssistantMessage.fragment)
       lastAssistantMessageIdRef.current = lastAssistantMessage.id
       
     } 
 
-    if (lastUserMessage && lastUserMessage.id !== lastUserMessageIdRef.current) {
+    if (lastMessage && lastMessage.id !== lastMessageIdRef.current) {
       scrollToBottom();
-      lastUserMessageIdRef.current = lastUserMessage.id
+      lastMessageIdRef.current = lastMessage.id;
     }
-
-
-    
-      
 
   }, [messages, setActiveFragment])
 

@@ -2,8 +2,9 @@ import ProjectView from "@/modules/projects/ui/views/ProjectView";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import React, { Suspense } from "react";
-import {  Message } from "@/generated/prisma/client";
-
+import { Message } from "@/generated/prisma/client";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallback from "@/components/ErrorFallback";
 
 export type MessageType = Message;
 export default async function ProjectPage({
@@ -27,9 +28,13 @@ export default async function ProjectPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<div>Loading...</div>}>
-        <ProjectView projectId={projectId} />
-      </Suspense>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <Suspense fallback={<div>Loading...</div>}>
+          <ProjectView projectId={projectId} />
+        </Suspense>
+      </ErrorBoundary>
     </HydrationBoundary>
   );
 }
+
+

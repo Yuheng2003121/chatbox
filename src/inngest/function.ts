@@ -69,7 +69,7 @@ export const codeAgentFunction = inngest.createFunction(
       system: PROMPT,
       model: openai({
         baseUrl: "https://api-inference.modelscope.cn/v1",
-        model: "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+        model: process.env.MODEL!,
         apiKey: process.env.OPENAI_API_KEY,
       }),
       tools: [
@@ -196,7 +196,7 @@ export const codeAgentFunction = inngest.createFunction(
       system: FRAGMENT_TITLE_PROMPT,
       model: openai({
         baseUrl: "https://api-inference.modelscope.cn/v1",
-        model: "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+        model: process.env.MODEL!,
         apiKey: process.env.OPENAI_API_KEY,
       }),
     })
@@ -207,7 +207,7 @@ export const codeAgentFunction = inngest.createFunction(
         system: RESPONSE_PROMPT,
         model: openai({
           baseUrl: "https://api-inference.modelscope.cn/v1",
-          model: "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+          model: process.env.MODEL!,
           apiKey: process.env.OPENAI_API_KEY,
         }),
       });

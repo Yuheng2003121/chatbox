@@ -26,7 +26,7 @@ export const codeAgentFunction = inngest.createFunction(
   async ({ event, step }) => {
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("vibe-nextjs-lyh");
-      await sandbox.setTimeout(SANDBOX_TIMEOUT);
+      await sandbox.setTimeout(SANDBOX_TIMEOUT)
       return sandbox.sandboxId;
     });
     const previousMessages = await step.run(
@@ -117,40 +117,14 @@ export const codeAgentFunction = inngest.createFunction(
           ) => {
             const newFiles = await step?.run("createOrUpdateFile", async () => {
               try {
-                // 添加调试信息
-                console.log("createOrUpdateFile called with files:", files);
-
-                // 验证文件参数
-                if (!files || !Array.isArray(files) || files.length === 0) {
-                  console.error("Invalid files parameter:", files);
-                  return `Error: Invalid files parameter - files must be a non-empty array`;
-                }
-
                 const updatedFiles = network.state.data.files || {};
                 const sandbox = await getSandbox(sandboxId);
                 for (const file of files) {
-                  // 验证每个文件对象
-                  if (!file || typeof file !== "object") {
-                    console.error("Invalid file object:", file);
-                    continue;
-                  }
-
-                  if (!file.path || typeof file.path !== "string") {
-                    console.error("Invalid file path:", file);
-                    continue;
-                  }
-
-                  if (!file.content || typeof file.content !== "string") {
-                    console.error("Invalid file content:", file);
-                    continue;
-                  }
-
                   await sandbox.files.write(file.path, file.content);
                   updatedFiles[file.path] = file.content;
                 }
                 return updatedFiles;
               } catch (error) {
-                console.error("Error in createOrUpdateFile:", error);
                 return `Error: ${error}`;
               }
             });
@@ -214,7 +188,7 @@ export const codeAgentFunction = inngest.createFunction(
     // const { output } = await codeAgent.run(
     //   `Wripte the following snippet: ${event.data.value}`
     // );
-    const result = await network.run(event.data.value, { state: state });
+    const result = await network.run(event.data.value, {state: state}); 
 
     const fragmentTitleGenerator = createAgent({
       name: "fragment-title-generator",
@@ -225,49 +199,50 @@ export const codeAgentFunction = inngest.createFunction(
         model: process.env.MODEL!,
         apiKey: process.env.OPENAI_API_KEY,
       }),
-    });
+    })
 
-    const responseGenerator = createAgent({
-      name: "fragment-response-generator",
-      description: "A response generator",
-      system: RESPONSE_PROMPT,
-      model: openai({
-        baseUrl: "https://api-inference.modelscope.cn/v1",
-        model: process.env.MODEL!,
-        apiKey: process.env.OPENAI_API_KEY,
-      }),
-    });
-    const { output: fragmentTitle } = await fragmentTitleGenerator.run(
-      `Generate a title for the following code: ${result.state.data.summary}`
-    );
+      const responseGenerator = createAgent({
+        name: "fragment-response-generator",
+        description: "A response generator",
+        system: RESPONSE_PROMPT,
+        model: openai({
+          baseUrl: "https://api-inference.modelscope.cn/v1",
+          model: process.env.MODEL!,
+          apiKey: process.env.OPENAI_API_KEY,
+        }),
+      });
+      const {output: fragmentTitle} = await fragmentTitleGenerator.run(
+        `Generate a title for the following code: ${result.state.data.summary}`
+      );
 
-    const { output: response } = await responseGenerator.run(
-      `Generate a response for the following code: ${result.state.data.summary}`
-    );
+      const {output: response} = await responseGenerator.run(
+        `Generate a response for the following code: ${result.state.data.summary}`
+      );
 
-    const generateFragmentTitle = () => {
-      if (fragmentTitle[0].type !== "text") {
-        return "Fragment";
+      const generateFragmentTitle = () => {
+        if(fragmentTitle[0].type !== "text") {
+          return "Fragment"
+        }
+
+        if(Array.isArray(fragmentTitle[0].content)) {
+          return fragmentTitle[0].content.join("");
+        } else {
+          return fragmentTitle[0].content;
+        }
       }
 
-      if (Array.isArray(fragmentTitle[0].content)) {
-        return fragmentTitle[0].content.join("");
-      } else {
-        return fragmentTitle[0].content;
-      }
-    };
+       const generateResponse = () => {
+         if (response[0].type !== "text") {
+           return "Here you go";
+         }
 
-    const generateResponse = () => {
-      if (response[0].type !== "text") {
-        return "Here you go";
-      }
+         if (Array.isArray(response[0].content)) {
+           return response[0].content.join("");
+         } else {
+           return response[0].content;
+         }
+       };
 
-      if (Array.isArray(response[0].content)) {
-        return response[0].content.join("");
-      } else {
-        return response[0].content;
-      }
-    };
 
     const isError =
       !result.state.data.summary ||
@@ -301,7 +276,7 @@ export const codeAgentFunction = inngest.createFunction(
             create: {
               sandboxUrl: sandboxUrl,
               title: generateFragmentTitle(),
-              files: result.state.data.files,
+              files: result.state.data.files
             },
           },
         },

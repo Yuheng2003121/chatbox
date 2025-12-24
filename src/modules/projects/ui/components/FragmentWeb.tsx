@@ -20,6 +20,8 @@ export default function FragmentWeb({ data }: FragmentWebProps) {
     // setTimeout(() => setCopied(false), 1000);
   }
 
+  
+
 
   return (
     <div className="flex flex-col h-full">
